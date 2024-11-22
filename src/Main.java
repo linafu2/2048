@@ -167,14 +167,15 @@ public class Main {
     }
   }
 
-  //adds a random 2 tile
+  //adds a random 2 (90%) or 4 (10%) tile
   public static void addRandomTile(JButton[][] buttonList) {
     boolean isValidPlace = false;
     while (!isValidPlace) {
       int row = (int) (Math.random() * 4);
       int col = (int) (Math.random() * 4);
       if (buttonList[row][col].getText().equals("0")) {
-        buttonList[row][col].setText("2");
+        int value = Math.random() < 0.9 ? 2 : 4;
+        buttonList[row][col].setText(String.valueOf(value));
         isValidPlace = true;
       }
     }
