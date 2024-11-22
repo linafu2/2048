@@ -85,7 +85,7 @@ public class Main {
 
     frame.setVisible(true);
 
-    //ACTUAL PROGRAM CODE
+    // initialize two random tiles to start with value of 2
     int startingPanel1 = (int) (Math.random() * 4);
     int startingPanel2 = (int) (Math.random() * 4);
     int startingPanel3 = (int) (Math.random() * 4);
@@ -94,7 +94,7 @@ public class Main {
     buttonList[startingPanel1][startingPanel2].setText("2");
     buttonList[startingPanel3][startingPanel4].setText("2");
 
-    //changes color of tiles depending on num
+    //color initial tiles
     for (JButton[] jButtons : buttonList) {
       for (int j = 0; j < buttonList[0].length; j++) {
         if (jButtons[j].getText().trim().equals("0")) {
@@ -113,25 +113,24 @@ public class Main {
 
     //game loop with timer
     Timer timer = new Timer(100, e -> {
+      //each time an up/down/left/right key is pressed
       if (UPCHECK || DOWNCHECK || LEFTCHECK || RIGHTCHECK) {
         if (UPCHECK) {
           checkUp(buttonList);
-          UPCHECK = false;
+          UPCHECK = false; //reset
         } else if (DOWNCHECK) {
           checkDown(buttonList);
           DOWNCHECK = false;
         } else if (LEFTCHECK) {
           checkLeft(buttonList);
           LEFTCHECK = false;
-        } else if (RIGHTCHECK) {
+        } else { // right key
           checkRight(buttonList);
           RIGHTCHECK = false;
         }
-        initializeBoard(buttonList);
-        updateTileColors(buttonList);
-        actionPanel.setFocusable(true);
-        actionPanel.requestFocusInWindow();
-        if (isGameOver(buttonList)) {
+        addRandomTile(buttonList); //add tile
+        updateTileColors(buttonList); //update colors
+        if (isGameOver(buttonList)) { //check game over
           showGameOver(frame, overPanel);
           ((Timer) e.getSource()).stop();
         }
@@ -168,13 +167,7 @@ public class Main {
     }
   }
 
-  //initializes board making sure initial two tiles don't overlap
-  public static void initializeBoard(JButton[][] buttonList) {
-    addRandomTile(buttonList);
-    addRandomTile(buttonList);
-  }
-
-  //adds random tiles at start of game
+  //adds a random 2 tile
   public static void addRandomTile(JButton[][] buttonList) {
     boolean isValidPlace = false;
     while (!isValidPlace) {
