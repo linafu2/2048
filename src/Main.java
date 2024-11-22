@@ -34,25 +34,25 @@ public class Main {
   public static void main(String[] args) {
     JFrame frame = new JFrame("2048");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.getContentPane().setBackground(Color.WHITE);
+    frame.getContentPane().setBackground(new Color(255, 240, 230));
     frame.setSize(500, 625);
     frame.setLayout(null);
 
     //title
     JPanel titlePanel = new JPanel();
     titlePanel.setBounds(0, 0, 500, 50);
-    titlePanel.setBackground(new Color(255, 143, 160));
+    titlePanel.setBackground(new Color(0xFFBEAE));
     JLabel title = new JLabel("2048");
     title.setHorizontalAlignment(JLabel.CENTER);
     title.setVerticalAlignment(JLabel.CENTER);
-    title.setForeground(new Color(207, 45, 70));
+    title.setForeground(Color.black);
     title.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, 40));
     titlePanel.add(title);
     frame.add(titlePanel);
 
     JPanel actionPanel = new JPanel();
     actionPanel.setBounds(40, 90, 400, 450);
-    actionPanel.setBackground(Color.WHITE);
+    actionPanel.setBackground(new Color(255, 240, 230));
     actionPanel.setLayout(new GridLayout(4, 4, 5, 5));
     actionPanel.setFocusable(true);
     actionPanel.requestFocusInWindow();
@@ -66,13 +66,15 @@ public class Main {
     for (int i = 0; i < buttonList.length; i++) {
       for (int j = 0; j < buttonList[i].length; j++) {
         buttonList[i][j] = new JButton();
+        buttonList[i][j].setOpaque(true);
+        buttonList[i][j].setBorderPainted(false);
         actionPanel.add(buttonList[i][j]);
       }
     }
 
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
-        buttonList[i][j].setBackground(new Color(255, 212, 223));
+        buttonList[i][j].setBackground(new Color(0xFFD9CC));
         buttonList[i][j].setText("0");
         buttonList[i][j].setFont(new Font("Arial", Font.BOLD, 30));
       }
@@ -96,13 +98,15 @@ public class Main {
     for (JButton[] jButtons : buttonList) {
       for (int j = 0; j < buttonList[0].length; j++) {
         if (jButtons[j].getText().trim().equals("0")) {
-          jButtons[j].setBackground(new Color(255, 194, 216));
-          jButtons[j].repaint();
+          jButtons[j].setBackground(new Color(0xFFD9CC));
+          jButtons[j].setOpaque(true);
+          jButtons[j].setBorderPainted(false);
         }
 
         if (jButtons[j].getText().trim().equals("2")) {
-          jButtons[j].setBackground(new Color(255, 173, 203));
-          jButtons[j].repaint();
+          jButtons[j].setBackground(new Color(0xFFD0C2));
+          jButtons[j].setOpaque(true);
+          jButtons[j].setBorderPainted(false);
         }
       }
     }
@@ -125,6 +129,8 @@ public class Main {
         }
         initializeBoard(buttonList);
         updateTileColors(buttonList);
+        actionPanel.setFocusable(true);
+        actionPanel.requestFocusInWindow();
         if (isGameOver(buttonList)) {
           showGameOver(frame, overPanel);
           ((Timer) e.getSource()).stop();
@@ -141,22 +147,23 @@ public class Main {
         String text = button.getText().trim();
         Color newColor;
         switch (text) {
-          case "0": newColor = new Color(255, 194, 216); break;
-          case "2": newColor = new Color(255, 173, 203); break;
-          case "4": newColor = new Color(255, 153, 190); break;
-          case "8": newColor = new Color(250, 132, 175); break;
-          case "16": newColor = new Color(250, 110, 161); break;
-          case "32": newColor = new Color(252, 88, 148); break;
-          case "64": newColor = new Color(252, 63, 132); break;
-          case "128": newColor = new Color(250, 45, 120); break;
-          case "256": newColor = new Color(232, 21, 98); break;
-          case "512": newColor = new Color(224, 9, 88); break;
-          case "1024": newColor = new Color(201, 2, 75); break;
-          case "2048": newColor = new Color(158, 2, 59); break;
+          case "0": newColor = new Color(0xFFD9CC); break;
+          case "2": newColor = new Color(0xFFD0C2); break;
+          case "4": newColor = new Color(0xFFC7B8); break;
+          case "8": newColor = new Color(0xFFBEAE); break;
+          case "16": newColor = new Color(0xFFB4A4); break;
+          case "32": newColor = new Color(0xFFAB9A); break;
+          case "64": newColor = new Color(0xFFA08F); break;
+          case "128": newColor = new Color(0xF68B82); break;
+          case "256": newColor = new Color(0xEF7977); break;
+          case "512": newColor = new Color(0xE8696D); break;
+          case "1024": newColor = new Color(0xDF5460); break;
+          case "2048": newColor = new Color(0xCF2D46); break;
           default: newColor = Color.GRAY;
         }
         button.setBackground(newColor);
-        button.repaint();
+        button.setOpaque(true);
+        button.setBorderPainted(false);
       }
     }
   }
@@ -184,9 +191,11 @@ public class Main {
   public static boolean isGameOver(JButton[][] buttonList) {
     for (int r = 0; r < 4; r++) {
       for (int c = 0; c < 4; c++) {
+        // not over if there are 0 tiles
         if (buttonList[r][c].getText().equals("0")) return false;
-        if (r > 0 && buttonList[r][c].getText().equals(buttonList[r - 1][c].getText())) return false;
-        if (c > 0 && buttonList[r][c].getText().equals(buttonList[r][c - 1].getText())) return false;
+        // not over if tiles next to each other can be combined
+        if (r < 3 && buttonList[r][c].getText().equals(buttonList[r + 1][c].getText())) return false;
+        if (c < 3 && buttonList[r][c].getText().equals(buttonList[r][c + 1].getText())) return false;
       }
     }
     return true;
@@ -196,21 +205,19 @@ public class Main {
   public static void showGameOver(JFrame frame, JPanel overPanel) {
     frame.getContentPane().removeAll();
     frame.add(overPanel);
-    frame.revalidate();
-    frame.repaint();
   }
 
   private static JPanel getOverPanel() {
     JPanel overPanel = new JPanel();
     overPanel.setBounds(0, 0, 500, 625);
-    overPanel.setBackground(Color.white);
+    overPanel.setBackground(new Color(255, 240, 230));
     JLabel overLabel = new JLabel("GAME OVER");
     overLabel.setHorizontalAlignment(JLabel.CENTER);
     overLabel.setVerticalAlignment(JLabel.CENTER);
     overPanel.setLayout(null);
     overLabel.setBounds(90, 200, 300, 200);
-    overLabel.setForeground(new Color(207, 45, 70));
-    overLabel.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 50));
+    overLabel.setForeground(new Color(0xCF2D46));
+    overLabel.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 40));
     overPanel.add(overLabel);
     return overPanel;
   }
