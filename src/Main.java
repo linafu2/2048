@@ -1,12 +1,8 @@
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Scanner;
 
 import javax.swing.*;
 
@@ -36,7 +32,7 @@ public class Main {
     }
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     JFrame frame = new JFrame("2048");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.getContentPane().setBackground(Color.WHITE);
@@ -66,27 +62,14 @@ public class Main {
     frame.add(actionPanel);
 
     //making the "buttons"
-    JButton button1 = new JButton();
-    JButton button2 = new JButton();
-    JButton button3 = new JButton();
-    JButton button4 = new JButton();
-    JButton button5 = new JButton();
-    JButton button6 = new JButton();
-    JButton button7 = new JButton();
-    JButton button8 = new JButton();
-    JButton button9 = new JButton();
-    JButton button10 = new JButton();
-    JButton button11 = new JButton();
-    JButton button12 = new JButton();
-    JButton button13 = new JButton();
-    JButton button14 = new JButton();
-    JButton button15 = new JButton();
-    JButton button16 = new JButton();
+    JButton[][] buttonList = new JButton[4][4];
 
-    JButton[][] buttonList = {{button1, button2, button3, button4},
-            {button5, button6, button7, button8},
-            {button9, button10, button11, button12},
-            {button13, button14, button15, button16}};
+    for (int i = 0; i < buttonList.length; i++) {
+      for (int j = 0; j < buttonList[i].length; j++) {
+        buttonList[i][j] = new JButton();
+        actionPanel.add(buttonList[i][j]);
+      }
+    }
 
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
@@ -95,23 +78,6 @@ public class Main {
         buttonList[i][j].setFont(new Font("Arial", Font.BOLD, 30));
       }
     }
-
-    actionPanel.add(button1);
-    actionPanel.add(button2);
-    actionPanel.add(button3);
-    actionPanel.add(button4);
-    actionPanel.add(button5);
-    actionPanel.add(button6);
-    actionPanel.add(button7);
-    actionPanel.add(button8);
-    actionPanel.add(button9);
-    actionPanel.add(button10);
-    actionPanel.add(button11);
-    actionPanel.add(button12);
-    actionPanel.add(button13);
-    actionPanel.add(button14);
-    actionPanel.add(button15);
-    actionPanel.add(button16);
 
     //game over screen
     JPanel overPanel = new JPanel();
@@ -138,14 +104,14 @@ public class Main {
     buttonList[startingPanel3][startingPanel4].setText("2");
 
     //changes color of tiles depending on num
-    for (int i = 0; i < buttonList.length; i++) {
+    for (JButton[] jButtons : buttonList) {
       for (int j = 0; j < buttonList[0].length; j++) {
-        if (buttonList[i][j].getText().equals("0"))
-          buttonList[i][j].setBackground(new Color(255, 194, 216));
+        if (jButtons[j].getText().equals("0"))
+          jButtons[j].setBackground(new Color(255, 194, 216));
 
 
-        if (buttonList[i][j].getText().equals("2"))
-          buttonList[i][j].setBackground(new Color(255, 173, 203));
+        if (jButtons[j].getText().equals("2"))
+          jButtons[j].setBackground(new Color(255, 173, 203));
       }
     }
 
@@ -177,9 +143,9 @@ public class Main {
         boolean isValidPlace = false;
         while (!isValidPlace) {
           int counter = 0;
-          for (int i = 0; i < buttonList.length; i++) {
+          for (JButton[] jButtons : buttonList) {
             for (int j = 0; j < buttonList[0].length; j++) {
-              if (buttonList[i][j].getText().equals("0"))
+              if (jButtons[j].getText().equals("0"))
                 counter++;
             }
           }
@@ -196,43 +162,43 @@ public class Main {
           }
         }
 
-        for (int i = 0; i < buttonList.length; i++) {
+        for (JButton[] jButtons : buttonList) {
           for (int j = 0; j < buttonList[0].length; j++) {
-            if (buttonList[i][j].getText().equals("0"))
-              buttonList[i][j].setBackground(new Color(255, 194, 216));
+            if (jButtons[j].getText().equals("0"))
+              jButtons[j].setBackground(new Color(255, 194, 216));
 
-            if (buttonList[i][j].getText().equals("2"))
-              buttonList[i][j].setBackground(new Color(255, 173, 203));
+            if (jButtons[j].getText().equals("2"))
+              jButtons[j].setBackground(new Color(255, 173, 203));
 
-            if (buttonList[i][j].getText().equals("4"))
-              buttonList[i][j].setBackground(new Color(255, 153, 190));
+            if (jButtons[j].getText().equals("4"))
+              jButtons[j].setBackground(new Color(255, 153, 190));
 
-            if (buttonList[i][j].getText().equals("8"))
-              buttonList[i][j].setBackground(new Color(250, 132, 175));
+            if (jButtons[j].getText().equals("8"))
+              jButtons[j].setBackground(new Color(250, 132, 175));
 
-            if (buttonList[i][j].getText().equals("16"))
-              buttonList[i][j].setBackground(new Color(250, 110, 161));
+            if (jButtons[j].getText().equals("16"))
+              jButtons[j].setBackground(new Color(250, 110, 161));
 
-            if (buttonList[i][j].getText().equals("32"))
-              buttonList[i][j].setBackground(new Color(252, 88, 148));
+            if (jButtons[j].getText().equals("32"))
+              jButtons[j].setBackground(new Color(252, 88, 148));
 
-            if (buttonList[i][j].getText().equals("64"))
-              buttonList[i][j].setBackground(new Color(252, 63, 132));
+            if (jButtons[j].getText().equals("64"))
+              jButtons[j].setBackground(new Color(252, 63, 132));
 
-            if (buttonList[i][j].getText().equals("128"))
-              buttonList[i][j].setBackground(new Color(250, 45, 120));
+            if (jButtons[j].getText().equals("128"))
+              jButtons[j].setBackground(new Color(250, 45, 120));
 
-            if (buttonList[i][j].getText().equals("256"))
-              buttonList[i][j].setBackground(new Color(232, 21, 98));
+            if (jButtons[j].getText().equals("256"))
+              jButtons[j].setBackground(new Color(232, 21, 98));
 
-            if (buttonList[i][j].getText().equals("512"))
-              buttonList[i][j].setBackground(new Color(224, 9, 88));
+            if (jButtons[j].getText().equals("512"))
+              jButtons[j].setBackground(new Color(224, 9, 88));
 
-            if (buttonList[i][j].getText().equals("1024"))
-              buttonList[i][j].setBackground(new Color(201, 2, 75));
+            if (jButtons[j].getText().equals("1024"))
+              jButtons[j].setBackground(new Color(201, 2, 75));
 
-            if (buttonList[i][j].getText().equals("2048"))
-              buttonList[i][j].setBackground(new Color(158, 2, 59));
+            if (jButtons[j].getText().equals("2048"))
+              jButtons[j].setBackground(new Color(158, 2, 59));
           }
         }
       }
@@ -249,13 +215,13 @@ public class Main {
           if (r != 0) {
             int temp;
             int otherTemp;
-            if (list[r][c].getText().equals("")) {
+            if (list[r][c].getText().isEmpty()) {
               temp = 0;
             } else {
               temp = Integer.parseInt(list[r][c].getText());
             }
 
-            if (list[r - 1][c].getText().equals("")) {
+            if (list[r - 1][c].getText().isEmpty()) {
               otherTemp = 0;
             } else {
               otherTemp = Integer.parseInt(list[r - 1][c].getText());
@@ -288,12 +254,12 @@ public class Main {
           if (r != list.length - 1) {
             int temp;
             int otherTemp;
-            if (list[r][c].getText().equals("")) {
+            if (list[r][c].getText().isEmpty()) {
               temp = 0;
             } else {
               temp = Integer.parseInt(list[r][c].getText());
             }
-            if (list[r + 1][c].getText().equals("")) {
+            if (list[r + 1][c].getText().isEmpty()) {
               otherTemp = 0;
             } else {
               otherTemp = Integer.parseInt(list[r + 1][c].getText());
@@ -326,12 +292,12 @@ public class Main {
           if (c != 0) {
             int temp;
             int otherTemp;
-            if (list[r][c].getText().equals("")) {
+            if (list[r][c].getText().isEmpty()) {
               temp = 0;
             } else {
               temp = Integer.parseInt(list[r][c].getText());
             }
-            if (list[r][c - 1].getText().equals("")) {
+            if (list[r][c - 1].getText().isEmpty()) {
               otherTemp = 0;
             } else {
               otherTemp = Integer.parseInt(list[r][c - 1].getText());
@@ -364,12 +330,12 @@ public class Main {
           if (c != list.length - 1) {
             int temp;
             int otherTemp;
-            if (list[r][c].getText().equals("")) {
+            if (list[r][c].getText().isEmpty()) {
               temp = 0;
             } else {
               temp = Integer.parseInt(list[r][c].getText());
             }
-            if (list[r][c + 1].getText().equals("")) {
+            if (list[r][c + 1].getText().isEmpty()) {
               otherTemp = 0;
             } else {
               otherTemp = Integer.parseInt(list[r][c + 1].getText());
