@@ -20,7 +20,6 @@ public class Main {
       if (key == KeyEvent.VK_UP) {
         UPCHECK = true;
       }
-
       if (key == KeyEvent.VK_DOWN) {
         DOWNCHECK = true;
       }
@@ -80,17 +79,7 @@ public class Main {
     }
 
     //game over screen
-    JPanel overPanel = new JPanel();
-    overPanel.setBounds(0, 0, 500, 700);
-    overPanel.setBackground(Color.white);
-    JLabel overLabel = new JLabel("GAME OVER");
-    overLabel.setHorizontalAlignment(JLabel.CENTER);
-    overLabel.setVerticalAlignment(JLabel.CENTER);
-    overPanel.setLayout(null);
-    overLabel.setBounds(90, 200, 300, 200);
-    overLabel.setForeground(new Color(207, 45, 70));
-    overLabel.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 50));
-    overPanel.add(overLabel);
+    JPanel overPanel = getOverPanel();
 
     frame.setVisible(true);
 
@@ -106,106 +95,126 @@ public class Main {
     //changes color of tiles depending on num
     for (JButton[] jButtons : buttonList) {
       for (int j = 0; j < buttonList[0].length; j++) {
-        if (jButtons[j].getText().equals("0"))
+        if (jButtons[j].getText().trim().equals("0")) {
           jButtons[j].setBackground(new Color(255, 194, 216));
+          jButtons[j].repaint();
+        }
 
-
-        if (jButtons[j].getText().equals("2"))
+        if (jButtons[j].getText().trim().equals("2")) {
           jButtons[j].setBackground(new Color(255, 173, 203));
+          jButtons[j].repaint();
+        }
       }
     }
 
-    boolean isPlaying = true;
-
-    while (isPlaying) {
-      System.out.println(UPCHECK);
+    //game loop with timer
+    Timer timer = new Timer(100, e -> {
       if (UPCHECK || DOWNCHECK || LEFTCHECK || RIGHTCHECK) {
-        System.out.println(UPCHECK);
         if (UPCHECK) {
-          System.out.println("hi");
           checkUp(buttonList);
           UPCHECK = false;
-        }
-        if (DOWNCHECK) {
+        } else if (DOWNCHECK) {
           checkDown(buttonList);
           DOWNCHECK = false;
-        }
-        if (LEFTCHECK) {
+        } else if (LEFTCHECK) {
           checkLeft(buttonList);
           LEFTCHECK = false;
-        }
-        if (RIGHTCHECK) {
+        } else if (RIGHTCHECK) {
           checkRight(buttonList);
           RIGHTCHECK = false;
         }
-
-        //adds random 2 to empty spot
-        boolean isValidPlace = false;
-        while (!isValidPlace) {
-          int counter = 0;
-          for (JButton[] jButtons : buttonList) {
-            for (int j = 0; j < buttonList[0].length; j++) {
-              if (jButtons[j].getText().equals("0"))
-                counter++;
-            }
-          }
-          if (counter == 0) {
-            System.out.println("GAME OVER");
-            isPlaying = false;
-          }
-
-          int num1 = (int) (Math.random() * 4);
-          int num2 = (int) (Math.random() * 4);
-          if (buttonList[num1][num2].getText().equals("0")) {
-            buttonList[num1][num2].setText("2");
-            isValidPlace = true;
-          }
+        initializeBoard(buttonList);
+        updateTileColors(buttonList);
+        if (isGameOver(buttonList)) {
+          showGameOver(frame, overPanel);
+          ((Timer) e.getSource()).stop();
         }
+      }
+    });
+    timer.start();
+  }
 
-        for (JButton[] jButtons : buttonList) {
-          for (int j = 0; j < buttonList[0].length; j++) {
-            if (jButtons[j].getText().equals("0"))
-              jButtons[j].setBackground(new Color(255, 194, 216));
-
-            if (jButtons[j].getText().equals("2"))
-              jButtons[j].setBackground(new Color(255, 173, 203));
-
-            if (jButtons[j].getText().equals("4"))
-              jButtons[j].setBackground(new Color(255, 153, 190));
-
-            if (jButtons[j].getText().equals("8"))
-              jButtons[j].setBackground(new Color(250, 132, 175));
-
-            if (jButtons[j].getText().equals("16"))
-              jButtons[j].setBackground(new Color(250, 110, 161));
-
-            if (jButtons[j].getText().equals("32"))
-              jButtons[j].setBackground(new Color(252, 88, 148));
-
-            if (jButtons[j].getText().equals("64"))
-              jButtons[j].setBackground(new Color(252, 63, 132));
-
-            if (jButtons[j].getText().equals("128"))
-              jButtons[j].setBackground(new Color(250, 45, 120));
-
-            if (jButtons[j].getText().equals("256"))
-              jButtons[j].setBackground(new Color(232, 21, 98));
-
-            if (jButtons[j].getText().equals("512"))
-              jButtons[j].setBackground(new Color(224, 9, 88));
-
-            if (jButtons[j].getText().equals("1024"))
-              jButtons[j].setBackground(new Color(201, 2, 75));
-
-            if (jButtons[j].getText().equals("2048"))
-              jButtons[j].setBackground(new Color(158, 2, 59));
-          }
+  //updates tile colors
+  public static void updateTileColors(JButton[][] buttonList) {
+    for (JButton[] row : buttonList) {
+      for (JButton button : row) {
+        String text = button.getText().trim();
+        Color newColor;
+        switch (text) {
+          case "0": newColor = new Color(255, 194, 216); break;
+          case "2": newColor = new Color(255, 173, 203); break;
+          case "4": newColor = new Color(255, 153, 190); break;
+          case "8": newColor = new Color(250, 132, 175); break;
+          case "16": newColor = new Color(250, 110, 161); break;
+          case "32": newColor = new Color(252, 88, 148); break;
+          case "64": newColor = new Color(252, 63, 132); break;
+          case "128": newColor = new Color(250, 45, 120); break;
+          case "256": newColor = new Color(232, 21, 98); break;
+          case "512": newColor = new Color(224, 9, 88); break;
+          case "1024": newColor = new Color(201, 2, 75); break;
+          case "2048": newColor = new Color(158, 2, 59); break;
+          default: newColor = Color.GRAY;
         }
+        button.setBackground(newColor);
       }
     }
   }
 
-  //function for when user presses up
+  //initializes board making sure initial two tiles don't overlap
+  public static void initializeBoard(JButton[][] buttonList) {
+    addRandomTile(buttonList);
+    addRandomTile(buttonList);
+  }
+
+  //adds random tiles at start of game
+  public static void addRandomTile(JButton[][] buttonList) {
+    boolean isValidPlace = false;
+    while (!isValidPlace) {
+      int row = (int) (Math.random() * 4);
+      int col = (int) (Math.random() * 4);
+      if (buttonList[row][col].getText().equals("0")) {
+        buttonList[row][col].setText("2");
+        isValidPlace = true;
+      }
+    }
+  }
+
+  //checks if game over
+  public static boolean isGameOver(JButton[][] buttonList) {
+    for (int r = 0; r < 4; r++) {
+      for (int c = 0; c < 4; c++) {
+        if (buttonList[r][c].getText().equals("0")) return false;
+        if (r > 0 && buttonList[r][c].getText().equals(buttonList[r - 1][c].getText())) return false;
+        if (c > 0 && buttonList[r][c].getText().equals(buttonList[r][c - 1].getText())) return false;
+      }
+    }
+    return true;
+  }
+
+  //game over screen
+  public static void showGameOver(JFrame frame, JPanel overPanel) {
+    frame.getContentPane().removeAll();
+    frame.add(overPanel);
+    frame.revalidate();
+    frame.repaint();
+  }
+
+  private static JPanel getOverPanel() {
+    JPanel overPanel = new JPanel();
+    overPanel.setBounds(0, 0, 500, 700);
+    overPanel.setBackground(Color.white);
+    JLabel overLabel = new JLabel("GAME OVER");
+    overLabel.setHorizontalAlignment(JLabel.CENTER);
+    overLabel.setVerticalAlignment(JLabel.CENTER);
+    overPanel.setLayout(null);
+    overLabel.setBounds(90, 200, 300, 200);
+    overLabel.setForeground(new Color(207, 45, 70));
+    overLabel.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 50));
+    overPanel.add(overLabel);
+    return overPanel;
+  }
+
+  //for when user presses up
   public static void checkUp(JButton[][] list) {
     boolean[][] addedAlready = new boolean[list.length][list[0].length];
 
@@ -244,7 +253,7 @@ public class Main {
     }
   }
 
-  //function for when user presses down
+  //for when user presses down
   public static void checkDown(JButton[][] list) {
     boolean[][] addedAlready = new boolean[list.length][list[0].length];
 
@@ -282,7 +291,7 @@ public class Main {
     }
   }
 
-  //function for when user presses left
+  //for when user presses left
   public static void checkLeft(JButton[][] list) {
     boolean[][] addedAlready = new boolean[list.length][list[0].length];
 
@@ -320,7 +329,7 @@ public class Main {
     }
   }
 
-  //function for when user presses right
+  //for when user presses right
   public static void checkRight(JButton[][] list) {
     boolean[][] addedAlready = new boolean[list.length][list[0].length];
 
