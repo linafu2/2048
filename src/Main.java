@@ -35,7 +35,7 @@ public class Main {
     JFrame frame = new JFrame("2048");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.getContentPane().setBackground(Color.WHITE);
-    frame.setSize(500, 700);
+    frame.setSize(500, 625);
     frame.setLayout(null);
 
     //title
@@ -156,6 +156,7 @@ public class Main {
           default: newColor = Color.GRAY;
         }
         button.setBackground(newColor);
+        button.repaint();
       }
     }
   }
@@ -201,7 +202,7 @@ public class Main {
 
   private static JPanel getOverPanel() {
     JPanel overPanel = new JPanel();
-    overPanel.setBounds(0, 0, 500, 700);
+    overPanel.setBounds(0, 0, 500, 625);
     overPanel.setBackground(Color.white);
     JLabel overLabel = new JLabel("GAME OVER");
     overLabel.setHorizontalAlignment(JLabel.CENTER);
