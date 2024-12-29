@@ -173,7 +173,7 @@ public class Main {
     while (!isValidPlace) {
       int row = (int) (Math.random() * 4);
       int col = (int) (Math.random() * 4);
-      if (buttonList[row][col].getText().equals("0")) {
+      if (buttonList[row][col].getText().trim().equals("0")) {
         int value = Math.random() < 0.9 ? 2 : 4;
         buttonList[row][col].setText(String.valueOf(value));
         isValidPlace = true;
@@ -188,8 +188,8 @@ public class Main {
         // not over if there are 0 tiles
         if (buttonList[r][c].getText().equals("0")) return false;
         // not over if tiles next to each other can be combined
-        if (r < 3 && buttonList[r][c].getText().equals(buttonList[r + 1][c].getText())) return false;
-        if (c < 3 && buttonList[r][c].getText().equals(buttonList[r][c + 1].getText())) return false;
+        if (r < 3 && buttonList[r][c].getText().trim().equals(buttonList[r + 1][c].getText().trim())) return false;
+        if (c < 3 && buttonList[r][c].getText().trim().equals(buttonList[r][c + 1].getText().trim())) return false;
       }
     }
     return true;
@@ -220,35 +220,32 @@ public class Main {
   public static void checkUp(JButton[][] list) {
     boolean[][] addedAlready = new boolean[list.length][list[0].length];
 
-    for (int i = 0; i < 4; i++) {
-      for (int c = 0; c < list[0].length; c++) {
-        for (int r = list.length - 1; r >= 0; r--) {
-          if (r != 0) {
-            int temp;
-            int otherTemp;
-            if (list[r][c].getText().isEmpty()) {
-              temp = 0;
-            } else {
-              temp = Integer.parseInt(list[r][c].getText());
-            }
+    //reset addedAlready array after each move
+    for (int i = 0; i < list.length; i++) {
+      for (int j = 0; j < list[i].length; j++) {
+        addedAlready[i][j] = false;
+      }
+    }
 
-            if (list[r - 1][c].getText().isEmpty()) {
-              otherTemp = 0;
-            } else {
-              otherTemp = Integer.parseInt(list[r - 1][c].getText());
-            }
+    //up move logic for each column
+    for (int c = 0; c < list[0].length; c++) {
+      for (int r = 1; r < list.length; r++) { //start from 1 bc nothing to merge with in row 0
+        if (!list[r][c].getText().trim().equals("0")) {
+          int temp = Integer.parseInt(list[r][c].getText().trim());
+          int checkRow = r - 1;
+          while (checkRow >= 0 && list[checkRow][c].getText().trim().equals("0")) {
+            checkRow--;
+          }
 
-            if (otherTemp == 0) {
-              list[r - 1][c].setText(String.valueOf(temp));
-              list[r][c].setText("0");
-            }
-            if (otherTemp == temp) {
-              if (!addedAlready[r][c]) {
-                list[r - 1][c].setText(String.valueOf(temp * 2));
-                list[r][c].setText("0");
-                addedAlready[r - 1][c] = true;
-              }
-            }
+          //if next cell is same value and hasn't merged yet
+          if (checkRow >= 0 && list[checkRow][c].getText().trim().equals(String.valueOf(temp))
+                  && !addedAlready[checkRow][c]) {
+            list[checkRow][c].setText(String.valueOf(temp * 2));
+            list[r][c].setText("0");
+            addedAlready[checkRow][c] = true;
+          } else if (checkRow + 1 != r) {
+            list[checkRow + 1][c].setText(String.valueOf(temp));
+            list[r][c].setText("0");
           }
         }
       }
@@ -259,34 +256,33 @@ public class Main {
   public static void checkDown(JButton[][] list) {
     boolean[][] addedAlready = new boolean[list.length][list[0].length];
 
-    for (int i = 0; i < 4; i++) {
-      for (int c = 0; c < list[0].length; c++) {
-        for (int r = 0; r < list.length; r++) {
-          if (r != list.length - 1) {
-            int temp;
-            int otherTemp;
-            if (list[r][c].getText().isEmpty()) {
-              temp = 0;
-            } else {
-              temp = Integer.parseInt(list[r][c].getText());
-            }
-            if (list[r + 1][c].getText().isEmpty()) {
-              otherTemp = 0;
-            } else {
-              otherTemp = Integer.parseInt(list[r + 1][c].getText());
-            }
+    //reset addedAlready array after each move
+    for (int i = 0; i < list.length; i++) {
+      for (int j = 0; j < list[i].length; j++) {
+        addedAlready[i][j] = false;
+      }
+    }
 
-            if (otherTemp == 0) {
-              list[r + 1][c].setText(String.valueOf(temp));
-              list[r][c].setText("0");
-            }
-            if (otherTemp == temp) {
-              if (!addedAlready[r][c]) {
-                list[r + 1][c].setText(String.valueOf(temp * 2));
-                list[r][c].setText("0");
-                addedAlready[r + 1][c] = true;
-              }
-            }
+    //down move logic for each column
+    for (int c = 0; c < list[0].length; c++) {
+      for (int r = list.length - 2; r >= 0; r--) { //start from second last row
+        if (!list[r][c].getText().trim().equals("0")) {
+          int temp = Integer.parseInt(list[r][c].getText().trim());
+          int checkRow = r + 1;
+          while (checkRow < list.length && list[checkRow][c].getText().trim().equals("0")) {
+            checkRow++;
+          }
+
+          //if next cell is same value and hasn't merged yet
+          if (checkRow < list.length
+                  && list[checkRow][c].getText().trim().equals(String.valueOf(temp))
+                  && !addedAlready[checkRow][c]) {
+            list[checkRow][c].setText(String.valueOf(temp * 2));
+            list[r][c].setText("0");
+            addedAlready[checkRow][c] = true;
+          } else if (checkRow - 1 != r) {
+            list[checkRow - 1][c].setText(String.valueOf(temp));
+            list[r][c].setText("0");
           }
         }
       }
@@ -297,34 +293,32 @@ public class Main {
   public static void checkLeft(JButton[][] list) {
     boolean[][] addedAlready = new boolean[list.length][list[0].length];
 
-    for (int i = 0; i < 4; i++) {
-      for (int r = 0; r < list.length; r++) {
-        for (int c = list[0].length - 1; c >= 0; c--) {
-          if (c != 0) {
-            int temp;
-            int otherTemp;
-            if (list[r][c].getText().isEmpty()) {
-              temp = 0;
-            } else {
-              temp = Integer.parseInt(list[r][c].getText());
-            }
-            if (list[r][c - 1].getText().isEmpty()) {
-              otherTemp = 0;
-            } else {
-              otherTemp = Integer.parseInt(list[r][c - 1].getText());
-            }
+    //reset addedAlready array after each move
+    for (int i = 0; i < list.length; i++) {
+      for (int j = 0; j < list[i].length; j++) {
+        addedAlready[i][j] = false;
+      }
+    }
 
-            if (otherTemp == 0) {
-              list[r][c - 1].setText(String.valueOf(temp));
-              list[r][c].setText("0");
-            }
-            if (otherTemp == temp) {
-              if (!addedAlready[r][c]) {
-                list[r][c - 1].setText(String.valueOf(temp * 2));
-                list[r][c].setText("0");
-                addedAlready[r][c - 1] = true;
-              }
-            }
+    //left move logic for each row
+    for (int r = 0; r < list.length; r++) {
+      for (int c = 1; c < list[0].length; c++) { //start from second column
+        if (!list[r][c].getText().trim().equals("0")) {
+          int temp = Integer.parseInt(list[r][c].getText().trim());
+          int checkCol = c - 1;
+          while (checkCol >= 0 && list[r][checkCol].getText().trim().equals("0")) {
+            checkCol--;
+          }
+
+          //if next cell is same value and hasn't merged yet
+          if (checkCol >= 0 && list[r][checkCol].getText().trim().equals(String.valueOf(temp))
+                  && !addedAlready[r][checkCol]) {
+            list[r][checkCol].setText(String.valueOf(temp * 2));
+            list[r][c].setText("0");
+            addedAlready[r][checkCol] = true;
+          } else if (checkCol + 1 != c) {
+            list[r][checkCol + 1].setText(String.valueOf(temp));
+            list[r][c].setText("0");
           }
         }
       }
@@ -335,34 +329,33 @@ public class Main {
   public static void checkRight(JButton[][] list) {
     boolean[][] addedAlready = new boolean[list.length][list[0].length];
 
-    for (int i = 0; i < 4; i++) {
-      for (int r = 0; r < list.length; r++) {
-        for (int c = 0; c < list[0].length; c++) {
-          if (c != list.length - 1) {
-            int temp;
-            int otherTemp;
-            if (list[r][c].getText().isEmpty()) {
-              temp = 0;
-            } else {
-              temp = Integer.parseInt(list[r][c].getText());
-            }
-            if (list[r][c + 1].getText().isEmpty()) {
-              otherTemp = 0;
-            } else {
-              otherTemp = Integer.parseInt(list[r][c + 1].getText());
-            }
+    //reset addedAlready array after each move
+    for (int i = 0; i < list.length; i++) {
+      for (int j = 0; j < list[i].length; j++) {
+        addedAlready[i][j] = false;
+      }
+    }
 
-            if (otherTemp == 0) {
-              list[r][c + 1].setText(String.valueOf(temp));
-              list[r][c].setText("0");
-            }
-            if (otherTemp == temp) {
-              if (!addedAlready[r][c]) {
-                list[r][c + 1].setText(String.valueOf(temp * 2));
-                list[r][c].setText("0");
-                addedAlready[r][c + 1] = true;
-              }
-            }
+    //right move logic for each row
+    for (int r = 0; r < list.length; r++) {
+      for (int c = list[0].length - 2; c >= 0; c--) { //start from second-last column
+        if (!list[r][c].getText().trim().equals("0")) {
+          int temp = Integer.parseInt(list[r][c].getText().trim());
+          int checkCol = c + 1;
+          while (checkCol < list[0].length && list[r][checkCol].getText().trim().equals("0")) {
+            checkCol++;
+          }
+
+          //if next cell is same value and hasn't merged yet
+          if (checkCol < list[0].length
+                  && list[r][checkCol].getText().trim().equals(String.valueOf(temp))
+                  && !addedAlready[r][checkCol]) {
+            list[r][checkCol].setText(String.valueOf(temp * 2));
+            list[r][c].setText("0");
+            addedAlready[r][checkCol] = true;
+          } else if (checkCol - 1 != c) {
+            list[r][checkCol - 1].setText(String.valueOf(temp));
+            list[r][c].setText("0");
           }
         }
       }
